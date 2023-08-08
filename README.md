@@ -1,3 +1,178 @@
+# Instalar Arch Linux en un sistema UEFI.
+
+### Paso 1: Preparativos
+
+1. **Descargar la imagen ISO**: Ve al sitio web oficial de Arch Linux y descarga la última imagen ISO desde [archlinux.org/download](https://archlinux.org/download/).
+
+2. **Crear un medio de instalación**: Utiliza una herramienta como Etcher o Rufus para crear un USB de arranque con la imagen ISO descargada.
+
+### Paso 2: Arrancar desde el medio de instalación
+
+1. **Arrancar desde el USB**: Reinicia tu computadora y asegúrate de que el USB esté conectado. Accede al menú de arranque y selecciona la opción para arrancar desde el USB.
+
+### Paso 3: Configuración del teclado
+
+1. **Elegir el idioma del teclado**: Cuando aparezca el menú de arranque de Arch Linux, selecciona "Arch Linux" y luego presiona la tecla `Enter`. Cuando se te pida, ingresa `es` si deseas el teclado en español.
+
+### Paso 4: Configuración de red
+
+1. **Conexión a Internet**: Si estás usando Ethernet, generalmente la conexión se configurará automáticamente. Si estás usando Wi-Fi, ejecuta `wifi-menu` y sigue las instrucciones para conectarte a tu red Wi-Fi. Tambien pudes usar `iwctl`, ejemplo:
+```
+iwclt
+station wlan0 connect "SSID"
+```
+
+### Paso 5: Particionamiento del disco en UEFI
+Particionamiento con cfdisk.
+Utiliza fdisk -l o lsblk para identificar tus discos y particiones.
+
+1. Escribe el comando `cfdisk` en la terminal y presiona Enter.
+2. Aparecerá una lista de dispositivos de almacenamiento. Selecciona el disco en el que deseas instalar Arch Linux (por ejemplo, `/dev/sda`).
+3. Dentro de `cfdisk`, verás una lista de particiones actuales en el disco seleccionado.
+4. Para crear una partición, selecciona la opción "Free Space" y presiona Enter.
+5. Selecciona "New" para crear una nueva partición.
+6. Específica el tamaño de la partición en al menos 512M.
+7. En opción "Type". Elige el sistema de archivos para la partición "EFI System").
+8. Selecciona "New" para crear la partición de swap.
+9. Específica el tamaño de la partición con el tamaño deseado (ejemplo: 2G).
+10. En opción "Type". Elige el sistema de archivos para la partición "Linux Swap").
+11. Selecciona "New" para crear la partición del sistema.
+12. Específica el tamaño de la partición con el tamaño deseado (puedes dejar el tamaño predeterminado si deseas usar todo el espacio disponible).
+13. Aparecerá una opción para "Write". Confirma y escribe los cambios en el disco.
+14. Después de escribir los cambios, selecciona "Quit" para salir de `cfdisk`.
+
+### Paso 6: Formatear y montar particiones en UEFI
+
+1. **Formatear particiones**: Escribe `mkfs.fat -F32 /dev/sdX1` para formatear la partición EFI, `mkswap /dev/sdX2` para la partición de swap y `mkfs.ext4 /dev/sdX3` para la partición del sistema.
+
+2. **Montar particiones**: Escribe `mount /dev/sdX2 /mnt` para montar la partición del sistema y `mkdir -p /mnt/boot` seguido de `mount /dev/sdX1 /mnt/boot` para montar la partición EFI.
+> Sustituye X por el disco correspondiente.
+
+### Paso 7: Instalar el sistema base
+
+1. **Instalar el sistema base**: Escribe `pacstrap /mnt base linux linux-firmware` y espera a que termine la instalación.
+Puede elegir otros paquetes que le pueden resultar necesarios:
+
+```
+networkmanager        # Administrar conexiones de red.
+wpa_supplicant        # Administrar conexiones de red inalámbrica, especialmente aquellas protegidas con WPA y WPA2.
+neovim                # Editor de codigo.
+nano                  # Editor de codigo.
+```
+
+### Paso 8: Configurar el sistema
+
+1. **Generar el archivo fstab**: 
+```
+genfstab -U /mnt >> /mnt/etc/fstab
+```
+
+3. **Cambiar al entorno root**: 
+```
+arch-chroot /mnt
+```
+> Cambia al entorno del sistema instalado.
+
+5. **Configurar la zona horaria**: 
+```bash
+ln -sf /usr/share/zoneinfo/Zone/SubZone /etc/localtime` 
+```
+> Reemplaza `Zone` y `SubZone` según tu ubicación.
+
+6. **Configurar el idioma**: 
+```
+nano /etc/locale.gen
+```
+Busca la línea `en_US.UTF-8` o similar y quita el símbolo `#` al principio de la línea. Luego, guarda el archivo con `Ctrl + O`, confirma con `Enter` y sal con `Ctrl + X`.
+
+6. **Generar el archivo de idioma**: 
+```
+locale-gen
+```
+
+7. **Configurar el hostname**:
+```
+echo "mihostname" > /etc/hostname
+```
+> Reemplaza `mihostname` con el nombre que desees para tu computadora.
+
+7. **Configurar el hosts**:
+Crea el archivo `/etc/hosts` y agrega lo siguiente:
+```
+127.0.0.1          localhost
+::1                localhost
+127.0.0.1          mihostname.localhost  localhost
+```
+> Reemplaza `mihostname` con el nombre de tu computadora.
+
+
+### Paso 9: Configurar contraseñas y usuario
+
+1. **Contraseña root**: 
+```
+passwd
+```
+> Sigue las instrucciones para establecer una contraseña para el usuario root.
+
+3. **Crear un usuario**: 
+```
+useradd -m -G wheel -s /bin/bash tunombredeusuario
+```
+> Reemplaza `tunombredeusuario` con el nombre que deseas para tu usuario.
+
+4. **Contraseña del usuario**: 
+```
+passwd tunombredeusuario
+```
+> Sigue las instrucciones para establecer una contraseña para el usuario.
+
+6. **Instalar y habilitar sudo**:
+```bash
+pacman -S sudo
+visudo # Anteriormente debe instalar vim
+```
+o 
+```
+nano /etc/sudoers
+```
+Busca la línea `%wheel ALL=(ALL) ALL` y quita el símbolo `#` al principio de la línea. Guarda el archivo y sal.
+
+### Paso 10: Instalar el gestor de arranque en UEFI
+
+1. **Instalar GRUB y efibootmgr**:
+```
+pacman -S grub efibootmgr os-prober
+```
+
+2. **Instalar el cargador de arranque**:
+```
+grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=arch_grub
+```
+
+3. **Generar la configuración de GRUB**: 
+```
+grub-mkconfig -o /boot/grub/grub.cfg
+```
+
+### Paso 11: Salir del entorno chroot y reiniciar
+
+1. **Salir del entorno chroot**: 
+```
+exit
+```
+
+2. **Desmontar particiones**: 
+```
+umount -R /mnt
+```
+
+3. **Reiniciar**: 
+```
+reboot
+```
+
+------------------------------------------------------------------------------------------------------------------
+
 # Instalación de Awesome en Arch Linux
 
 Este archivo proporciona instrucciones paso a paso para instalar el gestor de ventanas Awesome en Arch Linux.
