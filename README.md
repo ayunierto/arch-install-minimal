@@ -238,3 +238,20 @@ Awesome es altamente personalizable a través de su archivo de configuración `r
 
 Con esto tenemos un gestor de ventanas funcional y muy liviano.
 Este sistema no tiene mas de 300 paquetes instalados y el consumo de ram es de 200Mb.
+
+# Instalar paru
+Paru es un helper estándar de AUR para envolver pacman con muchas funciones y una interacción mínima.
+```
+sudo pacman -S --needed base-devel
+git clone https://aur.archlinux.org/paru.git
+cd paru
+makepkg -si
+```
+# Instalar chrome
+```
+sudo pacman - S git
+git clone https://aur.archlinux.org/google-chrome.git
+cd google-chrome
+makepkg -s
+```
+
