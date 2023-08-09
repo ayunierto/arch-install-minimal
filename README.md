@@ -179,9 +179,11 @@ Este archivo proporciona instrucciones paso a paso para instalar el gestor de ve
 
 ## Paso 1: Actualización del sistema
 
-Antes de comenzar, asegúrate de que tu sistema esté actualizado ejecutando el siguiente comando:
+Antes de comenzar, asegúrate de que tengas conexion y tu sistema esté actualizado ejecutando el siguiente comando:
 
 ```bash
+sudo systemctl enable NetworkManager       # Activa el servicio de red para que inicia automaticamente.
+sudo systemctl start NetworkManager        # Inicia el servicio de red.
 sudo pacman -Syu
 ```
 
@@ -224,5 +226,3 @@ Reinicia tu sistema o cierra sesión y selecciona "Awesome" como tu entorno de i
 ## Paso 7: Configuración y personalización
 
 Awesome es altamente personalizable a través de su archivo de configuración `rc.lua`, ubicado en `~/.config/awesome/`. Asegúrate de consultar ejemplos de configuraciones y la documentación oficial para personalizar tu experiencia.
-
-¡Disfruta usando el gestor de ventanas Awesome en Arch Linux!
