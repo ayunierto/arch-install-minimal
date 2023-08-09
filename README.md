@@ -218,6 +218,10 @@ Crea un archivo `~/.xinitrc` si no existe y agrega la siguiente línea para que 
 ```bash
 exec awesome
 ```
+Tambien es necesario instalar una terminal. La terminal que viene por defecto en awesome es `xterm`.
+```
+sudo pacman -S xterm
+```
 
 ## Paso 6: Iniciar sesión
 
