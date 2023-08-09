@@ -45,7 +45,13 @@ Utiliza fdisk -l o lsblk para identificar tus discos y particiones.
 
 1. **Formatear particiones**: Escribe `mkfs.fat -F32 /dev/sdX1` para formatear la partición EFI, `mkswap /dev/sdX2` para la partición de swap y `mkfs.ext4 /dev/sdX3` para la partición del sistema.
 
-2. **Montar particiones**: Escribe `mount /dev/sdX2 /mnt` para montar la partición del sistema y `mkdir -p /mnt/boot` seguido de `mount /dev/sdX1 /mnt/boot` para montar la partición EFI.
+2. **Montar particiones**: 
+```
+mount /dev/sdX2 /mnt           # Para montar la partición del sistema
+mkdir -p /mnt/boot 
+mount /dev/sdX1 /mnt/boot      # Para montar la partición EFI.
+swapon /dev/sdX3               # Para montar la particion de swap
+```
 > Sustituye X por el disco correspondiente.
 
 ### Paso 7: Instalar el sistema base
@@ -185,6 +191,11 @@ Antes de comenzar, asegúrate de que tengas conexion y tu sistema esté actualiz
 sudo systemctl enable NetworkManager       # Activa el servicio de red para que inicia automaticamente.
 sudo systemctl start NetworkManager        # Inicia el servicio de red.
 sudo pacman -Syu
+```
+Para conectarse a una red wifi:
+```
+nmcli device wifi list
+nmcli device wifi connect "SSID" passowrd "passwork"
 ```
 
 ## Paso 2: Instalación de Awesome
