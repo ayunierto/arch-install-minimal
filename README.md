@@ -229,4 +229,12 @@ Reinicia tu sistema o cierra sesión y selecciona "Awesome" como tu entorno de i
 
 ## Paso 7: Configuración y personalización
 
+Copie el archivo de configuracion de `/etc/xdg/awesome/rc.lua` al directorio `~/.config/awesome/`.
+```
+cp /etc/xdg/awesome/rc.lua ~/.config/awesome/
+```
+
 Awesome es altamente personalizable a través de su archivo de configuración `rc.lua`, ubicado en `~/.config/awesome/`. Asegúrate de consultar ejemplos de configuraciones y la documentación oficial para personalizar tu experiencia.
+
+Con esto tenemos un gestor de ventanas funcional y muy liviano.
+Este sistema no tiene mas de 300 paquetes instalados y el consumo de ram es de 200Mb.
